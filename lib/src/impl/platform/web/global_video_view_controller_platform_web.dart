@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:html' as html;
-import 'dart:ui' as ui;
+import 'dart:ui_web' as ui;
+
+import 'package:iris_method_channel/iris_method_channel.dart';
 
 import '/agora_rtc_engine.dart';
 import '/src/impl/platform/global_video_view_controller_platform.dart';
-import 'package:iris_method_channel/iris_method_channel.dart';
 
 // ignore_for_file: public_member_api_docs
 
@@ -16,10 +17,11 @@ String _getViewType(int id) {
 
 class _View {
   _View(int platformViewId)
-      : _element = html.DivElement()
-          ..id = _getViewType(platformViewId)
-          ..style.width = '100%'
-          ..style.height = '100%' {
+    : _element =
+          html.DivElement()
+            ..id = _getViewType(platformViewId)
+            ..style.width = '100%'
+            ..style.height = '100%' {
     // Wait until the element is injected into the DOM,
     // see https://github.com/flutter/flutter/issues/143922#issuecomment-1960133128
     final observer = html.IntersectionObserver((entries, observer) {
@@ -47,11 +49,13 @@ final Map<int, _View> _viewMap = {};
 
 class GlobalVideoViewControllerWeb extends GlobalVideoViewControllerPlatfrom {
   GlobalVideoViewControllerWeb(
-      IrisMethodChannel irisMethodChannel, RtcEngine rtcEngine)
-      : super(irisMethodChannel, rtcEngine) {
+    IrisMethodChannel irisMethodChannel,
+    RtcEngine rtcEngine,
+  ) : super(irisMethodChannel, rtcEngine) {
     // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(_platformRendererViewType,
-        (int viewId) {
+    ui.platformViewRegistry.registerViewFactory(_platformRendererViewType, (
+      int viewId,
+    ) {
       final view = _View(viewId);
       _viewMap[viewId] = view;
       return view.element;
@@ -65,8 +69,11 @@ class GlobalVideoViewControllerWeb extends GlobalVideoViewControllerPlatfrom {
   }
 
   @override
-  Future<void> setupVideoView(Object viewHandle, VideoCanvas videoCanvas,
-      {RtcConnection? connection}) async {
+  Future<void> setupVideoView(
+    Object viewHandle,
+    VideoCanvas videoCanvas, {
+    RtcConnection? connection,
+  }) async {
     // The `viewHandle` is the platform view id on web
     final viewId = viewHandle as int;
 
